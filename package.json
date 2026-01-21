@@ -1,0 +1,65 @@
+{
+  "name": "@venalabs/stellar-sdk",
+  "version": "1.0.0",
+  "description": "React SDK for Stellar blockchain integration",
+  "main": "./dist/venalabs-stellar-sdk.umd.js",
+  "module": "./dist/venalabs-stellar-sdk.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/venalabs-stellar-sdk.es.js",
+      "require": "./dist/venalabs-stellar-sdk.umd.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css}\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/venalabs/venalabs-stellar-sdk.git"
+  },
+  "keywords": [
+    "stellar",
+    "blockchain",
+    "react",
+    "sdk",
+    "web3"
+  ],
+  "author": "Venalabs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/venalabs/venalabs-stellar-sdk/issues"
+  },
+  "homepage": "https://github.com/venalabs/venalabs-stellar-sdk#readme"
+}
