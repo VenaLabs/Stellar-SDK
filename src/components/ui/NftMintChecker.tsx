@@ -173,7 +173,16 @@ export function NftMintChecker({
       const userAccount = await RpcServer.getAccount(stellarAddress);
 
       // Convert signature from hex string to Bytes (64 bytes for Ed25519)
-      const signatureBytes = Buffer.from(voucher.signature, 'hex');
+      // Use Uint8Array for browser compatibility (Buffer is Node.js only)
+      const hexToBytes = (hex: string): Uint8Array => {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+          bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+        }
+        return bytes;
+      };
+
+      const signatureBytes = hexToBytes(voucher.signature);
       if (signatureBytes.length !== 64) {
         throw new Error(`Invalid signature length: ${signatureBytes.length}`);
       }
@@ -192,7 +201,7 @@ export function NftMintChecker({
               xdr.ScVal.scvString(voucher.name || ''),
               new Address(voucher.recipient).toScVal(),
               xdr.ScVal.scvU64(xdr.Uint64.fromString(voucher.nonce)),
-              xdr.ScVal.scvBytes(signatureBytes),
+              xdr.ScVal.scvBytes(signatureBytes as unknown as Buffer),
             ],
           })
         )

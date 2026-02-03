@@ -101,7 +101,11 @@ interface SDKContextValue {
   refreshProgress: () => Promise<void>;
   getCourse: (courseId: string) => Promise<VenalabsCourse | null>;
   startCourse: (courseId: string) => Promise<void>;
-  completeStep: (courseId: string, stepId: string, response?: unknown) => Promise<VenalabsProgress | undefined>;
+  completeStep: (
+    courseId: string,
+    stepId: string,
+    response?: unknown
+  ) => Promise<VenalabsProgress | undefined>;
   onWalletLinked: (address: string, network: string) => void;
 }
 
@@ -175,10 +179,7 @@ function SDKErrorView({ error, onRetry }: SDKErrorViewProps) {
     <div className="venalabs-sdk-error">
       <EmptyState emoji={emoji} title={message}>
         {onRetry && (
-          <button
-            onClick={onRetry}
-            className="venalabs-btn-base venalabs-btn--primary"
-          >
+          <button onClick={onRetry} className="venalabs-btn-base venalabs-btn--primary">
             Try Again
           </button>
         )}
@@ -243,10 +244,11 @@ function VenalabsStellarSDKProvider({
     try {
       const response = await apiClient.getLinkedWallets();
       // Get the Stellar wallet address if available
-      const stellarAddress = response.walletAddresses?.['STELLAR_TESTNET'] ||
-                             response.walletAddresses?.['STELLAR_PUBLIC'] ||
-                             response.walletAddresses?.['STELLAR'] ||
-                             null;
+      const stellarAddress =
+        response.walletAddresses?.['STELLAR_TESTNET'] ||
+        response.walletAddresses?.['STELLAR_PUBLIC'] ||
+        response.walletAddresses?.['STELLAR'] ||
+        null;
       setLinkedWalletAddress(stellarAddress);
     } catch (err) {
       // Ignore errors - wallet may not be linked yet
@@ -316,7 +318,11 @@ function VenalabsStellarSDKProvider({
       response?: unknown
     ): Promise<VenalabsProgress | undefined> => {
       try {
-        await apiClient.completeStep(courseId, stepId, response as SdkStepCompletionRequest | undefined);
+        await apiClient.completeStep(
+          courseId,
+          stepId,
+          response as SdkStepCompletionRequest | undefined
+        );
         // Refresh progress after completing
         await refreshProgress();
         // Return updated progress for the course
@@ -364,7 +370,20 @@ function VenalabsStellarSDKProvider({
       completeStep,
       onWalletLinked,
     }),
-    [apiClient, maps, progress, loading, error, linkedWalletAddress, refreshMaps, refreshProgress, getCourse, startCourse, completeStep, onWalletLinked]
+    [
+      apiClient,
+      maps,
+      progress,
+      loading,
+      error,
+      linkedWalletAddress,
+      refreshMaps,
+      refreshProgress,
+      getCourse,
+      startCourse,
+      completeStep,
+      onWalletLinked,
+    ]
   );
 
   return (
@@ -379,7 +398,19 @@ function VenalabsStellarSDKProvider({
 // ============================================================
 
 function SDKRouter() {
-  const { maps, progress, loading, error, refreshMaps, getCourse, startCourse, completeStep, apiClient, linkedWalletAddress, onWalletLinked } = useSDKContext();
+  const {
+    maps,
+    progress,
+    loading,
+    error,
+    refreshMaps,
+    getCourse,
+    startCourse,
+    completeStep,
+    apiClient,
+    linkedWalletAddress,
+    onWalletLinked,
+  } = useSDKContext();
   const { view, navigateToMap, navigateToCourse, navigateToStep } = useSDKNavigation();
 
   // Course state for course and step views
@@ -445,7 +476,9 @@ function SDKRouter() {
       // Find first incomplete step
       const sortedSteps = [...currentCourse.steps].sort((a, b) => a.order - b.order);
       const firstIncomplete = sortedSteps.find((step) => {
-        const stepProgress = currentCourseProgress.stepProgress?.find((sp) => sp.stepId === step.id);
+        const stepProgress = currentCourseProgress.stepProgress?.find(
+          (sp) => sp.stepId === step.id
+        );
         return stepProgress?.status !== 'COMPLETED';
       });
       if (firstIncomplete) {
@@ -503,13 +536,7 @@ function SDKRouter() {
 
   // Map view
   if (view.type === 'map') {
-    return (
-      <MapView
-        maps={maps}
-        progress={progress}
-        onNodeClick={handleNodeClick}
-      />
-    );
+    return <MapView maps={maps} progress={progress} onNodeClick={handleNodeClick} />;
   }
 
   // Course detail view
@@ -556,7 +583,7 @@ function SDKRouter() {
 export function VenalabsStellarSDK({
   apiKey,
   getAccessToken,
-  lang = 'fr',
+  lang = 'en',
   stellarNetwork = 'TESTNET',
   minHeight = 600,
   className = '',
