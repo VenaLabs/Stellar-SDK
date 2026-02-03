@@ -32,7 +32,7 @@ export function WalletLinker({
   onWalletLinked,
 }: WalletLinkerProps): JSX.Element {
   const { t } = useTranslation();
-  const { stellarAddress, isConnected, isConnecting, connect, kit } = useStellarWallet();
+  const { stellarAddress, isConnected, isConnecting, connect } = useStellarWallet();
   const { signMessage } = useStellarWallet();
 
   const { setLinkedWalletAddress } = useWalletStore();
