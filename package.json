@@ -1,6 +1,6 @@
 {
   "name": "@venalabs/stellar-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React SDK for Stellar blockchain integration",
   "main": "./dist/venalabs-stellar-sdk.umd.js",
   "module": "./dist/venalabs-stellar-sdk.es.js",
