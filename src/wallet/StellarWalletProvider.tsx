@@ -15,7 +15,7 @@ import {
 import type { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 import { useWalletStore } from '../store';
 
-export type StellarNetwork = 'TESTNET' | 'MAINNET';
+export type StellarNetwork = 'TESTNET' | 'PUBLIC';
 
 export interface StellarWalletContextValue {
   /** The wallet kit instance */
