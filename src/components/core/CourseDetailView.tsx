@@ -7,11 +7,7 @@
 import { useState } from 'react';
 import { Check, Play, Lock, Gift, Loader2 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
-import type {
-  VenalabsCourse,
-  VenalabsProgress,
-  VenalabsCourseStep,
-} from '../../types';
+import type { VenalabsCourse, VenalabsProgress, VenalabsCourseStep } from '../../types';
 import { getLocalizedText } from '../../types';
 import {
   GlassCard,
@@ -23,7 +19,6 @@ import {
   MutedText,
   SuccessText,
   IconContainer,
-  EmptyState,
   LoadingSmooth,
 } from '../ui/GlassCard';
 import { RewardsSection } from '../ui/CourseCard';
@@ -105,24 +100,10 @@ export function CourseDetailView({
 
   const sortedSteps = [...(course?.steps || [])].sort((a, b) => a.order - b.order);
 
-  if (loading) {
+  if (loading || !course) {
     return (
       <div className="venalabs-course-detail venalabs-loading-container">
         <LoadingSmooth />
-      </div>
-    );
-  }
-
-  if (!course) {
-    return (
-      <div className="venalabs-course-detail">
-        <EmptyState emoji="😕" title={t('courses.notFound')}>
-          {onBack && (
-            <GlassButton variant="primary" onClick={onBack}>
-              {t('courses.goBack')}
-            </GlassButton>
-          )}
-        </EmptyState>
       </div>
     );
   }
@@ -134,9 +115,7 @@ export function CourseDetailView({
         <div className="venalabs-course-detail__header">
           <div className="venalabs-course-detail__header-row">
             {onBack && <BackButton onClick={onBack} />}
-            <Title className="venalabs-flex-1">
-              {getLocalizedText(course.title, locale)}
-            </Title>
+            <Title className="venalabs-flex-1">{getLocalizedText(course.title, locale)}</Title>
 
             {/* Completed badge */}
             {progress?.status === 'COMPLETED' && (
@@ -232,11 +211,7 @@ export function CourseDetailView({
                 {/* Step icon */}
                 <IconContainer
                   status={
-                    status === 'completed'
-                      ? 'success'
-                      : status === 'current'
-                      ? 'primary'
-                      : 'locked'
+                    status === 'completed' ? 'success' : status === 'current' ? 'primary' : 'locked'
                   }
                 >
                   {status === 'completed' ? (

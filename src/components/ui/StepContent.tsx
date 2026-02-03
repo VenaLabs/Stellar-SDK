@@ -334,12 +334,23 @@ function TextStepContent({
   isCompleted: boolean;
 }) {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+
+  const handleComplete = async () => {
+    setLoading(true);
+    try {
+      await Promise.resolve(onComplete());
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="venalabs-step-content">
       <BlockContentView blocks={content} noContentText={t('stepContent.noContent')} />
       {!isCompleted && (
-        <GlassButton variant="secondary" onClick={() => onComplete()}>
+        <GlassButton variant="secondary" onClick={handleComplete} disabled={loading}>
+          {loading && <Loader2 className="venalabs-icon-sm venalabs-animate-spin" />}
           {t('stepContent.markAsComplete')}
         </GlassButton>
       )}
@@ -363,6 +374,7 @@ function VideoStepContent({
   isCompleted: boolean;
 }) {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
 
   const getEmbedUrl = (url: string) => {
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -376,6 +388,15 @@ function VideoStepContent({
       return `https://player.vimeo.com/video/${videoId}`;
     }
     return url;
+  };
+
+  const handleComplete = async () => {
+    setLoading(true);
+    try {
+      await Promise.resolve(onComplete());
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -397,7 +418,8 @@ function VideoStepContent({
       )}
 
       {!isCompleted && (
-        <GlassButton variant="primary" onClick={() => onComplete()}>
+        <GlassButton variant="primary" onClick={handleComplete} disabled={loading}>
+          {loading && <Loader2 className="venalabs-icon-sm venalabs-animate-spin" />}
           {t('stepContent.markAsComplete')}
         </GlassButton>
       )}
@@ -525,6 +547,16 @@ function ExeStepContent({
   onWalletLinked?: (address: string, network: string) => void;
 }) {
   const { t, locale } = useTranslation();
+  const [loading, setLoading] = useState(false);
+
+  const handleComplete = async () => {
+    setLoading(true);
+    try {
+      await Promise.resolve(onComplete());
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // If we have a checker and apiClient, use CheckerVerification
   if (checker && apiClient && courseId && stepId && onWalletLinked) {
@@ -566,7 +598,8 @@ function ExeStepContent({
       )}
 
       {!isCompleted && (
-        <GlassButton variant="primary" onClick={() => onComplete()}>
+        <GlassButton variant="primary" onClick={handleComplete} disabled={loading}>
+          {loading && <Loader2 className="venalabs-icon-sm venalabs-animate-spin" />}
           {t('stepContent.markAsComplete')}
         </GlassButton>
       )}

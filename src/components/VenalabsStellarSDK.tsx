@@ -262,13 +262,13 @@ function VenalabsStellarSDKProvider({
   // Refresh functions
   const refreshMaps = useCallback(async () => {
     try {
-      const fetchedMaps = await apiClient.getMaps();
+      const fetchedMaps = await apiClient.getMaps(lang);
       setMaps(fetchedMaps);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch maps'));
     }
-  }, [apiClient]);
+  }, [apiClient, lang]);
 
   const refreshProgress = useCallback(async () => {
     try {
@@ -283,21 +283,22 @@ function VenalabsStellarSDKProvider({
   // Get course with caching
   const getCourse = useCallback(
     async (courseId: string): Promise<VenalabsCourse | null> => {
-      // Check cache first
-      if (courseCache.has(courseId)) {
-        return courseCache.get(courseId)!;
+      // Check cache first (include lang in cache key)
+      const cacheKey = `${courseId}:${lang}`;
+      if (courseCache.has(cacheKey)) {
+        return courseCache.get(cacheKey)!;
       }
 
       try {
-        const course = await apiClient.getCourse(courseId);
-        courseCache.set(courseId, course);
+        const course = await apiClient.getCourse(courseId, lang);
+        courseCache.set(cacheKey, course);
         return course;
       } catch (err) {
         console.error('Failed to fetch course:', err);
         return null;
       }
     },
-    [apiClient, courseCache]
+    [apiClient, courseCache, lang]
   );
 
   // Start course

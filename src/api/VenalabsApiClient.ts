@@ -210,10 +210,11 @@ export class VenalabsApiClient {
 
   /**
    * Get all published maps for the organization
+   * @param lang - Language code for localized content (default: 'en')
    * @returns Promise resolving to array of maps
    */
-  async getMaps(): Promise<VenalabsMap[]> {
-    return this.get<VenalabsMap[]>('/maps');
+  async getMaps(lang: string = 'en'): Promise<VenalabsMap[]> {
+    return this.get<VenalabsMap[]>(`/maps?lang=${encodeURIComponent(lang)}`);
   }
 
   // ============================================================
@@ -223,13 +224,14 @@ export class VenalabsApiClient {
   /**
    * Get a specific course by ID
    * @param courseId - The course ID to retrieve
+   * @param lang - Language code for localized content (default: 'en')
    * @returns Promise resolving to the course
    */
-  async getCourse(courseId: string): Promise<VenalabsCourse> {
+  async getCourse(courseId: string, lang: string = 'en'): Promise<VenalabsCourse> {
     if (!courseId) {
       throw new Error('courseId is required');
     }
-    return this.get<VenalabsCourse>(`/courses/${encodeURIComponent(courseId)}`);
+    return this.get<VenalabsCourse>(`/courses/${encodeURIComponent(courseId)}?lang=${encodeURIComponent(lang)}`);
   }
 
   /**

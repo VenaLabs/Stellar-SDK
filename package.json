@@ -27,7 +27,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "yalc:publish": "npm run build && yalc publish --push",
+    "yalc:watch": "npm run build && yalc publish --push && chokidar \"src/**/*\" -c \"npm run build && yalc push\""
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.0.0",

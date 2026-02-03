@@ -212,8 +212,6 @@ import VenalabsStellarSDK, {
 
 ## Support
 
-- Documentation: [https://docs.airdroped.io/sdk](https://docs.airdroped.io/sdk)
-- Issues: [https://github.com/venalabs/venalabs-stellar-sdk/issues](https://github.com/venalabs/venalabs-stellar-sdk/issues)
 - Email: hello@venalabs.com
 
 ## License

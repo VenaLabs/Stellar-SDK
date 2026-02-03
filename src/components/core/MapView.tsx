@@ -5,11 +5,19 @@
  */
 
 import { useCallback, useRef, useState, useEffect } from 'react';
-import {
-  TransformWrapper,
-  TransformComponent,
-  ReactZoomPanPinchRef,
-} from 'react-zoom-pan-pinch';
+import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
+import { Focus } from 'lucide-react';
+import { useTranslation } from '../../i18n';
+import type {
+  VenalabsMap,
+  VenalabsMapNode,
+  VenalabsProgress,
+  VenalabsConnectionSide,
+  CourseCardStatus,
+} from '../../types';
+import { getLocalizedText } from '../../types';
+import { CourseCard } from '../ui/CourseCard';
+import { LoadingPage, EmptyState } from '../ui/GlassCard';
 
 // LocalStorage helpers
 const getLastVisitedKey = (mapId: string) => `venalabs_map_${mapId}_lastVisited`;
@@ -32,18 +40,6 @@ function setLocalStorage(key: string, value: unknown): void {
     // Ignore storage errors
   }
 }
-import { Focus } from 'lucide-react';
-import { useTranslation } from '../../i18n';
-import type {
-  VenalabsMap,
-  VenalabsMapNode,
-  VenalabsProgress,
-  VenalabsConnectionSide,
-  CourseCardStatus,
-} from '../../types';
-import { getLocalizedText } from '../../types';
-import { CourseCard } from '../ui/CourseCard';
-import { LoadingPage, EmptyState } from '../ui/GlassCard';
 
 // Utility function for class names
 function cn(...classes: (string | boolean | undefined | null)[]): string {
@@ -116,17 +112,12 @@ export function MapView({
   const [lastVisitedNodeId, setLastVisitedNodeId] = useState<string | null>(null);
 
   // Find selected map or default to first
-  const selectedMap = selectedMapId
-    ? maps.find(m => m.id === selectedMapId) || maps[0]
-    : maps[0];
+  const selectedMap = selectedMapId ? maps.find((m) => m.id === selectedMapId) || maps[0] : maps[0];
 
   // Load last visited node from localStorage when map changes
   useEffect(() => {
     if (selectedMap) {
-      const lastVisited = getLocalStorage<string | null>(
-        getLastVisitedKey(selectedMap.id),
-        null
-      );
+      const lastVisited = getLocalStorage<string | null>(getLastVisitedKey(selectedMap.id), null);
       setLastVisitedNodeId(lastVisited);
     }
   }, [selectedMap?.id]);
@@ -257,9 +248,7 @@ export function MapView({
   }
 
   if (!selectedMap) {
-    return (
-      <EmptyState emoji="🗺️" title="No learning maps available" />
-    );
+    return <EmptyState emoji="🗺️" title="No learning maps available" />;
   }
 
   // Calculate grid dimensions
@@ -387,7 +376,9 @@ export function MapView({
                   const isLocked = toStatus === 'LOCKED';
                   const isCompleted = toStatus === 'COMPLETED';
                   const strokeDasharray = isCompleted ? 'none' : '10,10';
-                  const markerId = isLocked ? 'venalabs-arrowhead-locked' : 'venalabs-arrowhead-primary';
+                  const markerId = isLocked
+                    ? 'venalabs-arrowhead-locked'
+                    : 'venalabs-arrowhead-primary';
 
                   // Generate path
                   const isFromVertical = fromSide === 'TOP' || fromSide === 'BOTTOM';
@@ -413,7 +404,9 @@ export function MapView({
                         fill="none"
                         className={cn(
                           'venalabs-connection-path',
-                          isLocked ? 'venalabs-connection-path--locked' : 'venalabs-connection-path--primary'
+                          isLocked
+                            ? 'venalabs-connection-path--locked'
+                            : 'venalabs-connection-path--primary'
                         )}
                         strokeWidth="3"
                         strokeDasharray={strokeDasharray}

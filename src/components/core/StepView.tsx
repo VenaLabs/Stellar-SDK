@@ -7,11 +7,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Check, ChevronLeft, ChevronRight, Gift } from 'lucide-react';
 import { useTranslation } from '../../i18n';
-import type {
-  VenalabsCourse,
-  VenalabsProgress,
-  VenalabsChecker,
-} from '../../types';
+import type { VenalabsCourse, VenalabsProgress, VenalabsChecker } from '../../types';
 import { getLocalizedText } from '../../types';
 import {
   GlassCard,
@@ -21,7 +17,6 @@ import {
   Title,
   Subtitle,
   MutedText,
-  EmptyState,
   LoadingSmooth,
 } from '../ui/GlassCard';
 import { StepContent } from '../ui/StepContent';
@@ -64,9 +59,7 @@ export function StepView({
   onFinishCourse,
 }: StepViewProps) {
   const { t, locale } = useTranslation();
-  const [currentProgress, setCurrentProgress] = useState<VenalabsProgress | null>(
-    progress || null
-  );
+  const [currentProgress, setCurrentProgress] = useState<VenalabsProgress | null>(progress || null);
 
   // Update progress when prop changes
   useEffect(() => {
@@ -151,24 +144,10 @@ export function StepView({
     }
   };
 
-  if (loading) {
+  if (loading || !course || !currentStep) {
     return (
       <div className="venalabs-step-view venalabs-loading-container">
         <LoadingSmooth />
-      </div>
-    );
-  }
-
-  if (!course || !currentStep) {
-    return (
-      <div className="venalabs-step-view">
-        <EmptyState emoji="😕" title="Step not found">
-          {onBack && (
-            <GlassButton variant="primary" onClick={onBack}>
-              {t('courses.goBack')}
-            </GlassButton>
-          )}
-        </EmptyState>
       </div>
     );
   }
@@ -195,9 +174,7 @@ export function StepView({
         <div className="venalabs-step-view__progress">
           <div className="venalabs-step-view__progress-bar">
             {sortedSteps.map((step, index) => {
-              const stepProg = currentProgress?.stepProgress?.find(
-                (sp) => sp.stepId === step.id
-              );
+              const stepProg = currentProgress?.stepProgress?.find((sp) => sp.stepId === step.id);
               const isStepCompleted = stepProg?.status === 'COMPLETED';
               const isCurrent = index === currentStepIndex;
 
@@ -207,7 +184,9 @@ export function StepView({
                   className={cn(
                     'venalabs-step-view__progress-segment',
                     isStepCompleted && 'venalabs-step-view__progress-segment--completed',
-                    isCurrent && !isStepCompleted && 'venalabs-step-view__progress-segment--current',
+                    isCurrent &&
+                      !isStepCompleted &&
+                      'venalabs-step-view__progress-segment--current',
                     !isCurrent && !isStepCompleted && 'venalabs-step-view__progress-segment--empty'
                   )}
                 />
@@ -217,9 +196,7 @@ export function StepView({
           {/* Reward icons */}
           <div className="venalabs-step-view__rewards-row">
             {sortedSteps.map((step) => {
-              const stepProg = currentProgress?.stepProgress?.find(
-                (sp) => sp.stepId === step.id
-              );
+              const stepProg = currentProgress?.stepProgress?.find((sp) => sp.stepId === step.id);
               const isStepCompleted = stepProg?.status === 'COMPLETED';
               const hasRewards =
                 step.rewardContent?.rewards && step.rewardContent.rewards.length > 0;
