@@ -524,7 +524,7 @@ function ExeStepContent({
   linkedWalletAddress?: string;
   onWalletLinked?: (address: string, network: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   // If we have a checker and apiClient, use CheckerVerification
   if (checker && apiClient && courseId && stepId && onWalletLinked) {
@@ -556,7 +556,7 @@ function ExeStepContent({
           <p className="venalabs-checker-info__label">
             {t('verification.label')}{' '}
             <span className="venalabs-checker-info__name">
-              {getLocalizedText(checker.name, 'en')}
+              {getLocalizedText(checker.name, locale)}
             </span>
           </p>
           <div className="venalabs-checker-info__badges">
