@@ -1,0 +1,70 @@
+/**
+ * Wallet Store - Manages Stellar wallet state using Zustand
+ */
+
+import { create } from 'zustand';
+
+export interface WalletState {
+  /** Connected Stellar wallet address */
+  stellarAddress: string | null;
+  /** Connected wallet ID (e.g., 'freighter') */
+  walletId: string | null;
+  /** Linked wallet address for the current organization */
+  linkedWalletAddress: string | null;
+  /** Whether wallet is currently connecting */
+  isConnecting: boolean;
+  /** Whether wallet is currently linking */
+  isLinking: boolean;
+  /** Connection error message */
+  connectionError: string | null;
+}
+
+export interface WalletActions {
+  /** Set the connected Stellar address */
+  setStellarAddress: (address: string | null) => void;
+  /** Set the wallet ID */
+  setWalletId: (id: string | null) => void;
+  /** Set the linked wallet address */
+  setLinkedWalletAddress: (address: string | null) => void;
+  /** Set connecting state */
+  setIsConnecting: (connecting: boolean) => void;
+  /** Set linking state */
+  setIsLinking: (linking: boolean) => void;
+  /** Set connection error */
+  setConnectionError: (error: string | null) => void;
+  /** Reset wallet state */
+  reset: () => void;
+}
+
+export type WalletStore = WalletState & WalletActions;
+
+const initialState: WalletState = {
+  stellarAddress: null,
+  walletId: null,
+  linkedWalletAddress: null,
+  isConnecting: false,
+  isLinking: false,
+  connectionError: null,
+};
+
+/**
+ * Create a wallet store for managing Stellar wallet state
+ */
+export const createWalletStore = () =>
+  create<WalletStore>((set) => ({
+    ...initialState,
+
+    setStellarAddress: (address) => set({ stellarAddress: address, connectionError: null }),
+    setWalletId: (id) => set({ walletId: id }),
+    setLinkedWalletAddress: (address) => set({ linkedWalletAddress: address }),
+    setIsConnecting: (connecting) => set({ isConnecting: connecting }),
+    setIsLinking: (linking) => set({ isLinking: linking }),
+    setConnectionError: (error) => set({ connectionError: error, isConnecting: false }),
+    reset: () => set(initialState),
+  }));
+
+/**
+ * Default wallet store instance
+ * Can be used outside of React components
+ */
+export const useWalletStore = createWalletStore();

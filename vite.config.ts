@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import dts from 'vite-plugin-dts';
+import { copyFileSync, mkdirSync } from 'fs';
 
 export default defineConfig({
   plugins: [
@@ -10,6 +11,21 @@ export default defineConfig({
       include: ['src'],
       rollupTypes: true,
     }),
+    {
+      name: 'copy-css',
+      closeBundle() {
+        // Copy CSS file to dist
+        try {
+          mkdirSync(resolve(__dirname, 'dist'), { recursive: true });
+          copyFileSync(
+            resolve(__dirname, 'src/styles/index.css'),
+            resolve(__dirname, 'dist/style.css')
+          );
+        } catch (e) {
+          console.error('Failed to copy CSS:', e);
+        }
+      },
+    },
   ],
   build: {
     lib: {
