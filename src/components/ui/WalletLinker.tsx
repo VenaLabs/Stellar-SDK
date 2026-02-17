@@ -37,7 +37,7 @@ export function WalletLinker({
   const { stellarAddress, isConnected, isConnecting, connect } = useStellarWallet();
   const { signMessage } = useStellarWallet();
 
-  const { setLinkedWalletAddress } = useWalletStore();
+  const { setLinkedWalletForNetwork } = useWalletStore();
 
   const [linking, setLinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +87,7 @@ export function WalletLinker({
       }
 
       // Success
-      setLinkedWalletAddress(stellarAddress);
+      setLinkedWalletForNetwork(network, stellarAddress);
       onWalletLinked(stellarAddress, network);
     } catch (err) {
       console.error('[WalletLinker] Link failed:', err);
@@ -96,7 +96,7 @@ export function WalletLinker({
     }
 
     setLinking(false);
-  }, [stellarAddress, apiClient, signMessage, network, onWalletLinked, setLinkedWalletAddress, t]);
+  }, [stellarAddress, apiClient, signMessage, network, onWalletLinked, setLinkedWalletForNetwork, t]);
 
   // Format address for display
   const formatAddress = (address: string) => {

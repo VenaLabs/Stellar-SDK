@@ -53,6 +53,7 @@ export interface StellarWalletProviderProps {
  */
 export function StellarWalletProvider({
   children,
+  network = 'TESTNET',
   externalKit,
 }: StellarWalletProviderProps): JSX.Element {
   const [kit, setKit] = useState<StellarWalletsKit | null>(null);
@@ -90,7 +91,7 @@ export function StellarWalletProvider({
           await import('@creit.tech/stellar-wallets-kit');
 
         const instance = new StellarWalletsKit({
-          network: WalletNetwork.PUBLIC,
+          network: network === 'PUBLIC' ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET,
           selectedWalletId: FREIGHTER_ID,
           modules: [new FreighterModule()],
         });

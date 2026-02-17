@@ -158,16 +158,6 @@ export default function CoursesPage() {
 }
 ```
 
-## Automatic Token Refresh
-
-The SDK automatically handles token expiration:
-
-- When a 401 response is received, the SDK calls `getAccessToken` again
-- The new token is cached and used for subsequent requests
-- Concurrent requests during refresh are queued to avoid multiple token fetches
-
-This means your `getAccessToken` function should always return a fresh token from your backend.
-
 ## Troubleshooting
 
 | Error                   | Cause                           | Solution                                                            |

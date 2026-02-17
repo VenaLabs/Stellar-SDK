@@ -9,8 +9,8 @@ export interface WalletState {
   stellarAddress: string | null;
   /** Connected wallet ID (e.g., 'freighter') */
   walletId: string | null;
-  /** Linked wallet address for the current organization */
-  linkedWalletAddress: string | null;
+  /** Linked wallets map: network -> address (e.g., { "STELLAR_TESTNET": "G..." }) */
+  linkedWallets: Record<string, string>;
   /** Whether wallet is currently connecting */
   isConnecting: boolean;
   /** Whether wallet is currently linking */
@@ -24,8 +24,10 @@ export interface WalletActions {
   setStellarAddress: (address: string | null) => void;
   /** Set the wallet ID */
   setWalletId: (id: string | null) => void;
-  /** Set the linked wallet address */
-  setLinkedWalletAddress: (address: string | null) => void;
+  /** Replace the entire linked wallets map */
+  setLinkedWallets: (wallets: Record<string, string>) => void;
+  /** Set a linked wallet for a specific network */
+  setLinkedWalletForNetwork: (network: string, address: string) => void;
   /** Set connecting state */
   setIsConnecting: (connecting: boolean) => void;
   /** Set linking state */
@@ -41,7 +43,7 @@ export type WalletStore = WalletState & WalletActions;
 const initialState: WalletState = {
   stellarAddress: null,
   walletId: null,
-  linkedWalletAddress: null,
+  linkedWallets: {},
   isConnecting: false,
   isLinking: false,
   connectionError: null,
@@ -56,7 +58,11 @@ export const createWalletStore = () =>
 
     setStellarAddress: (address) => set({ stellarAddress: address, connectionError: null }),
     setWalletId: (id) => set({ walletId: id }),
-    setLinkedWalletAddress: (address) => set({ linkedWalletAddress: address }),
+    setLinkedWallets: (wallets) => set({ linkedWallets: wallets }),
+    setLinkedWalletForNetwork: (network, address) =>
+      set((state) => ({
+        linkedWallets: { ...state.linkedWallets, [network]: address },
+      })),
     setIsConnecting: (connecting) => set({ isConnecting: connecting }),
     setIsLinking: (linking) => set({ isLinking: linking }),
     setConnectionError: (error) => set({ connectionError: error, isConnecting: false }),

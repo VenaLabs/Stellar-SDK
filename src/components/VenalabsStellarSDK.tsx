@@ -96,7 +96,7 @@ interface SDKContextValue {
   progress: VenalabsProgress[];
   loading: boolean;
   error: VenalabsApiError | Error | null;
-  linkedWalletAddress: string | null;
+  linkedWallets: Record<string, string>;
   refreshMaps: () => Promise<void>;
   refreshProgress: () => Promise<void>;
   getCourse: (courseId: string) => Promise<VenalabsCourse | null>;
@@ -232,24 +232,18 @@ function VenalabsStellarSDKProvider({
   const [progress, setProgress] = useState<VenalabsProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<VenalabsApiError | Error | null>(null);
-  const [linkedWalletAddress, setLinkedWalletAddress] = useState<string | null>(null);
+  const [linkedWallets, setLinkedWallets] = useState<Record<string, string>>({});
 
   // Wallet linked handler
-  const onWalletLinked = useCallback((address: string, _network: string) => {
-    setLinkedWalletAddress(address);
+  const onWalletLinked = useCallback((address: string, network: string) => {
+    setLinkedWallets(prev => ({ ...prev, [network]: address }));
   }, []);
 
   // Fetch linked wallet helper
   const fetchLinkedWallet = useCallback(async () => {
     try {
       const response = await apiClient.getLinkedWallets();
-      // Get the Stellar wallet address if available
-      const stellarAddress =
-        response.walletAddresses?.['STELLAR_TESTNET'] ||
-        response.walletAddresses?.['STELLAR_PUBLIC'] ||
-        response.walletAddresses?.['STELLAR'] ||
-        null;
-      setLinkedWalletAddress(stellarAddress);
+      setLinkedWallets(response.walletAddresses || {});
     } catch (err) {
       // Ignore errors - wallet may not be linked yet
       console.debug('No linked wallet found:', err);
@@ -363,7 +357,7 @@ function VenalabsStellarSDKProvider({
       progress,
       loading,
       error,
-      linkedWalletAddress,
+      linkedWallets,
       refreshMaps,
       refreshProgress,
       getCourse,
@@ -377,7 +371,7 @@ function VenalabsStellarSDKProvider({
       progress,
       loading,
       error,
-      linkedWalletAddress,
+      linkedWallets,
       refreshMaps,
       refreshProgress,
       getCourse,
@@ -409,7 +403,7 @@ function SDKRouter() {
     startCourse,
     completeStep,
     apiClient,
-    linkedWalletAddress,
+    linkedWallets,
     onWalletLinked,
   } = useSDKContext();
   const { view, navigateToMap, navigateToCourse, navigateToStep } = useSDKNavigation();
@@ -564,7 +558,7 @@ function SDKRouter() {
         progress={currentCourseProgress}
         loading={courseLoading}
         apiClient={apiClient}
-        linkedWalletAddress={linkedWalletAddress || undefined}
+        linkedWallets={linkedWallets}
         onWalletLinked={onWalletLinked}
         onBack={handleBackToCourse}
         onStepChange={handleStepChange}
@@ -585,6 +579,7 @@ export function VenalabsStellarSDK({
   apiKey,
   getAccessToken,
   lang = 'en',
+  stellarNetwork,
   minHeight = 600,
   className = '',
   baseUrl,
@@ -613,7 +608,7 @@ export function VenalabsStellarSDK({
       className={`venalabs-sdk-container ${className}`.trim()}
       style={{ minHeight: minHeightStyle }}
     >
-      <StellarWalletProvider externalKit={externalWalletKit}>
+      <StellarWalletProvider network={stellarNetwork} externalKit={externalWalletKit}>
         <VenalabsStellarSDKProvider
           apiKey={apiKey}
           getAccessToken={getAccessToken}

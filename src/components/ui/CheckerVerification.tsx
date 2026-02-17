@@ -84,6 +84,7 @@ export function CheckerVerification({
 
   // Get network from checker config
   const getCheckerNetwork = (): string => {
+    console.log(checker);
     if (checker.linkedConfig?.network) return checker.linkedConfig.network;
     if (checker.balanceConfig?.network) return checker.balanceConfig.network;
     if (checker.transactionConfig?.network) return checker.transactionConfig.network;
@@ -91,6 +92,7 @@ export function CheckerVerification({
   };
 
   const checkerNetwork = getCheckerNetwork();
+  console.log(checkerNetwork);
 
   // Check if this checker requires wallet connection
   const requiresWallet =

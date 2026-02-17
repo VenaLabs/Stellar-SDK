@@ -34,8 +34,8 @@ interface StepViewProps {
   loading?: boolean;
   /** API client for wallet/verification operations */
   apiClient?: VenalabsApiClient;
-  /** Linked wallet address for verification */
-  linkedWalletAddress?: string;
+  /** Linked wallets map: network -> address */
+  linkedWallets?: Record<string, string>;
   /** Callback when wallet is linked */
   onWalletLinked?: (address: string, network: string) => void;
   onBack?: () => void;
@@ -51,7 +51,7 @@ export function StepView({
   progress,
   loading = false,
   apiClient,
-  linkedWalletAddress,
+  linkedWallets,
   onWalletLinked,
   onBack,
   onStepChange,
@@ -103,6 +103,7 @@ export function StepView({
     if (!currentStep || currentStep.type !== 'EXE' || !currentStep.exeContent?.checkerType) {
       return null;
     }
+    console.log(currentStep);
     return {
       id: currentStep.exeContent.checkerId || '',
       organizationId: course?.organizationId || '',
@@ -116,6 +117,28 @@ export function StepView({
       status: 'ACTIVE',
       createdOn: '',
     };
+  };
+
+  // Resolve linked wallet address for the current checker's network
+  const getLinkedWalletForChecker = (): string | undefined => {
+    const checker = getCheckerForStep();
+    if (!checker || !linkedWallets) return undefined;
+
+    let network: string | undefined;
+    if (checker.linkedConfig?.network) {
+      network = checker.linkedConfig.network;
+    } else if (checker.balanceConfig?.network) {
+      network = checker.balanceConfig.network;
+    } else if (checker.transactionConfig?.network) {
+      network = checker.transactionConfig.network;
+    } else if (checker.nftMintConfig?.network) {
+      network = checker.nftMintConfig.network;
+    }
+
+    if (network) {
+      return linkedWallets[network];
+    }
+    return undefined;
   };
 
   const handleComplete = async (response?: unknown) => {
@@ -231,7 +254,7 @@ export function StepView({
           courseId={course.id}
           stepId={stepId}
           checker={getCheckerForStep()}
-          linkedWalletAddress={linkedWalletAddress}
+          linkedWalletAddress={getLinkedWalletForChecker()}
           onWalletLinked={onWalletLinked}
         />
       </GlassCard>
