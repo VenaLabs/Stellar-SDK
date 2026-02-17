@@ -33,11 +33,9 @@ export interface StellarWalletContextValue {
   /** Disconnect the wallet */
   disconnect: () => void;
   /** Sign a message with the connected wallet */
-  signMessage: (message: string) => Promise<string>;
+  signMessage: (message: string, networkPassphrase: string) => Promise<string>;
   /** Sign a transaction XDR */
-  signTransaction: (xdr: string) => Promise<string>;
-  /** The configured network */
-  network: StellarNetwork;
+  signTransaction: (xdr: string, networkPassphrase: string) => Promise<string>;
 }
 
 const StellarWalletContext = createContext<StellarWalletContextValue | null>(null);
@@ -55,12 +53,10 @@ export interface StellarWalletProviderProps {
  */
 export function StellarWalletProvider({
   children,
-  network = 'TESTNET',
   externalKit,
 }: StellarWalletProviderProps): JSX.Element {
   const [kit, setKit] = useState<StellarWalletsKit | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [networkPassphrase, setNetworkPassphrase] = useState<string>('');
 
   const {
     stellarAddress,
@@ -79,15 +75,9 @@ export function StellarWalletProvider({
       return;
     }
 
-    const passphrase =
-      network === 'PUBLIC'
-        ? 'Public Global Stellar Network ; September 2015'
-        : 'Test SDF Network ; September 2015';
-
     // Use external kit if provided
     if (externalKit) {
       console.debug('[StellarWalletProvider] Using external wallet kit');
-      setNetworkPassphrase(passphrase);
       setKit(externalKit);
       setIsInitialized(true);
       return;
@@ -99,15 +89,12 @@ export function StellarWalletProvider({
         const { StellarWalletsKit, WalletNetwork, FREIGHTER_ID, FreighterModule } =
           await import('@creit.tech/stellar-wallets-kit');
 
-        const walletNetwork = network === 'PUBLIC' ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET;
-
         const instance = new StellarWalletsKit({
-          network: walletNetwork,
+          network: WalletNetwork.PUBLIC,
           selectedWalletId: FREIGHTER_ID,
           modules: [new FreighterModule()],
         });
 
-        setNetworkPassphrase(passphrase);
         setKit(instance);
         setIsInitialized(true);
       } catch (error) {
@@ -117,7 +104,7 @@ export function StellarWalletProvider({
     };
 
     initKit();
-  }, [network, setConnectionError, kit, externalKit]);
+  }, [setConnectionError, kit, externalKit]);
 
   // Connect wallet
   const connect = useCallback(async (): Promise<string | null> => {
@@ -164,30 +151,32 @@ export function StellarWalletProvider({
 
   // Sign a message
   const signMessage = useCallback(
-    async (message: string): Promise<string> => {
+    async (message: string, passPhrase: string): Promise<string> => {
       if (!kit || !stellarAddress) {
         throw new Error('Wallet not connected');
       }
 
       const result = await kit.signMessage(message, {
         address: stellarAddress,
-        networkPassphrase,
+        networkPassphrase: passPhrase,
       });
 
       return result.signedMessage;
     },
-    [kit, stellarAddress, networkPassphrase]
+    [kit, stellarAddress]
   );
 
   // Sign a transaction
   const signTransaction = useCallback(
-    async (xdr: string): Promise<string> => {
+    async (xdr: string, passPhrase: string): Promise<string> => {
       if (!kit) {
         throw new Error('Wallet not connected');
       }
 
-      const result = await kit.signTransaction(xdr);
-      return result.signedTxXdr;
+      const { signedTxXdr } = await kit.signTransaction(xdr, {
+        networkPassphrase: passPhrase,
+      });
+      return signedTxXdr;
     },
     [kit]
   );
@@ -203,7 +192,6 @@ export function StellarWalletProvider({
       disconnect,
       signMessage,
       signTransaction,
-      network,
     }),
     [
       kit,
@@ -214,7 +202,6 @@ export function StellarWalletProvider({
       disconnect,
       signMessage,
       signTransaction,
-      network,
     ]
   );
 

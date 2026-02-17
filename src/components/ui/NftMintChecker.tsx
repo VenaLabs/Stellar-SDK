@@ -13,6 +13,11 @@ import type { VenalabsApiClient } from '../../api';
 import { VenalabsApiError } from '../../api';
 import type { VenalabsChecker, VenalabsNftVoucherResponse } from '../../types';
 import { getLocalizedText } from '../../types';
+import {
+  getSorobanRpcUrl,
+  getNetworkPassphrase,
+  getExplorerUrl as getExplorerUrlUtil,
+} from '../../utils/stellarNetworkUtils';
 
 // Utility function for class names
 function cn(...classes: (string | boolean | undefined | null)[]): string {
@@ -74,7 +79,7 @@ export function NftMintChecker({
   const [voucherData, setVoucherData] = useState<VenalabsNftVoucherResponse | null>(null);
 
   // Get network from checker config
-  const checkerNetwork = checker.nftMintConfig?.network || 'STELLAR';
+  const checkerNetwork = checker.nftMintConfig?.network || 'STELLAR_PUBLIC';
 
   // Wallet state checks
   const isWalletConnected = isConnected;
@@ -156,7 +161,6 @@ export function NftMintChecker({
       // Dynamic import of Stellar SDK
       const {
         TransactionBuilder,
-        Networks,
         Operation,
         Address,
         rpc: StellarRpc,
@@ -165,7 +169,10 @@ export function NftMintChecker({
         xdr,
       } = await import('@stellar/stellar-sdk');
 
-      const RpcServer = new StellarRpc.Server('https://soroban-testnet.stellar.org', {
+      const rpcUrl = getSorobanRpcUrl(checkerNetwork);
+      const passphrase = getNetworkPassphrase(checkerNetwork);
+
+      const RpcServer = new StellarRpc.Server(rpcUrl, {
         allowHttp: true,
       });
 
@@ -190,7 +197,7 @@ export function NftMintChecker({
       // Build transaction with mint_with_voucher function
       const tx = new TransactionBuilder(userAccount, {
         fee: BASE_FEE,
-        networkPassphrase: Networks.TESTNET,
+        networkPassphrase: passphrase,
       })
         .addOperation(
           Operation.invokeContractFunction({
@@ -215,8 +222,8 @@ export function NftMintChecker({
 
       // 4. Sign via wallet
       console.log('[NftMintChecker] Step 4: Opening wallet for signing...');
-      const signedTxXdr = await signTransaction(assembledTx.toXDR());
-      const signedTx = new Transaction(signedTxXdr, Networks.TESTNET);
+      const signedTxXdr = await signTransaction(assembledTx.toXDR(), passphrase);
+      const signedTx = new Transaction(signedTxXdr, passphrase);
 
       // 5. Submit transaction
       console.log('[NftMintChecker] Step 5: Submitting transaction...');
@@ -276,7 +283,7 @@ export function NftMintChecker({
 
   // Get Stellar explorer URL
   const getExplorerUrl = (hash: string) => {
-    return `https://stellar.expert/explorer/testnet/search?term=${hash}`;
+    return getExplorerUrlUtil(checkerNetwork, hash);
   };
 
   // Format address for display

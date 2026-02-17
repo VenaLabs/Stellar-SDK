@@ -122,7 +122,7 @@ export class VenalabsApiClient {
     return {
       'Content-Type': 'application/json',
       'X-Api-Key': this.apiKey,
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     };
   }
 
@@ -231,7 +231,9 @@ export class VenalabsApiClient {
     if (!courseId) {
       throw new Error('courseId is required');
     }
-    return this.get<VenalabsCourse>(`/courses/${encodeURIComponent(courseId)}?lang=${encodeURIComponent(lang)}`);
+    return this.get<VenalabsCourse>(
+      `/courses/${encodeURIComponent(courseId)}?lang=${encodeURIComponent(lang)}`
+    );
   }
 
   /**
@@ -331,7 +333,8 @@ export class VenalabsApiClient {
    */
   async linkStellarWallet(
     walletAddress: string,
-    signature: string
+    signature: string,
+    network?: string
   ): Promise<VenalabsWalletLinkResponse> {
     if (!walletAddress) {
       throw new Error('walletAddress is required');
@@ -339,7 +342,11 @@ export class VenalabsApiClient {
     if (!signature) {
       throw new Error('signature is required');
     }
-    const request: VenalabsWalletLinkRequest = { walletAddress, signature };
+    const request: VenalabsWalletLinkRequest = {
+      walletAddress,
+      signature,
+      network: network || 'STELLAR_TESTNET',
+    };
     return this.post<VenalabsWalletLinkResponse>('/wallet/stellar/link', request);
   }
 
@@ -361,10 +368,7 @@ export class VenalabsApiClient {
    * @param stepId - The step ID to verify
    * @returns Promise resolving to verification result
    */
-  async verifyStep(
-    courseId: string,
-    stepId: string
-  ): Promise<VenalabsCheckerVerificationResult> {
+  async verifyStep(courseId: string, stepId: string): Promise<VenalabsCheckerVerificationResult> {
     if (!courseId) {
       throw new Error('courseId is required');
     }
@@ -386,10 +390,7 @@ export class VenalabsApiClient {
    * @param stepId - The step ID
    * @returns Promise resolving to NFT voucher response
    */
-  async getNftVoucher(
-    courseId: string,
-    stepId: string
-  ): Promise<VenalabsNftVoucherResponse> {
+  async getNftVoucher(courseId: string, stepId: string): Promise<VenalabsNftVoucherResponse> {
     if (!courseId) {
       throw new Error('courseId is required');
     }
@@ -408,11 +409,7 @@ export class VenalabsApiClient {
    * @param txHash - Transaction hash from the mint
    * @returns Promise resolving when verification is complete
    */
-  async verifyNftMint(
-    courseId: string,
-    stepId: string,
-    txHash: string
-  ): Promise<void> {
+  async verifyNftMint(courseId: string, stepId: string, txHash: string): Promise<void> {
     if (!courseId) {
       throw new Error('courseId is required');
     }

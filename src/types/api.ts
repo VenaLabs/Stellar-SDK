@@ -108,6 +108,7 @@ export interface VenalabsWalletNonceResponse {
 export interface VenalabsWalletLinkRequest {
   walletAddress: string;
   signature: string;
+  network?: string;
 }
 
 /**

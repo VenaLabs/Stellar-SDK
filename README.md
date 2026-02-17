@@ -37,7 +37,6 @@ function App() {
 | `apiKey`            | `string`                    | Yes      | -              | API Key provided by Airdroped dashboard                                               |
 | `getAccessToken`    | `() => Promise<string>`     | Yes      | -              | Async function that returns an access token (called on init and automatically on 401) |
 | `lang`              | `'fr' \| 'en'`              | No       | `'en'`         | UI language                                                                           |
-| `stellarNetwork`    | `'TESTNET' \| 'PUBLIC'`     | No       | `'TESTNET'`    | Stellar network for wallet operations                                                 |
 | `minHeight`         | `string \| number`          | No       | `600`          | Minimum height of the SDK container (px or CSS value)                                 |
 | `className`         | `string`                    | No       | `''`           | Custom class name for the container                                                   |
 | `baseUrl`           | `string`                    | No       | Production URL | Custom API base URL (for testing)                                                     |
@@ -153,7 +152,6 @@ export default function CoursesPage() {
         apiKey={process.env.NEXT_PUBLIC_VENALABS_API_KEY!}
         getAccessToken={getAccessToken}
         lang="en"
-        stellarNetwork="PUBLIC"
       />
     </div>
   );

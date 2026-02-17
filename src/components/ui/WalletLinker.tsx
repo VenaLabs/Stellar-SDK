@@ -11,6 +11,8 @@ import { useTranslation } from '../../i18n';
 import { GlassButton } from './GlassCard';
 import type { VenalabsApiClient } from '../../api';
 
+import { getNetworkPassphrase } from '../../utils/stellarNetworkUtils';
+
 export interface WalletLinkerProps {
   /** API client instance for making wallet API calls */
   apiClient: VenalabsApiClient;
@@ -73,10 +75,10 @@ export function WalletLinker({
         `Nonce: ${nonceResponse.nonce}`;
 
       // 3. Sign message with wallet
-      const signature = await signMessage(formattedMessage);
+      const signature = await signMessage(formattedMessage, getNetworkPassphrase(network));
 
       // 4. Link wallet on backend
-      const linkResponse = await apiClient.linkStellarWallet(stellarAddress, signature);
+      const linkResponse = await apiClient.linkStellarWallet(stellarAddress, signature, network);
 
       if (!linkResponse.success) {
         setError(t('wallet.failedLink'));

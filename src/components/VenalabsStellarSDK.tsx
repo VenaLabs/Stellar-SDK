@@ -585,7 +585,6 @@ export function VenalabsStellarSDK({
   apiKey,
   getAccessToken,
   lang = 'en',
-  stellarNetwork = 'TESTNET',
   minHeight = 600,
   className = '',
   baseUrl,
@@ -614,7 +613,7 @@ export function VenalabsStellarSDK({
       className={`venalabs-sdk-container ${className}`.trim()}
       style={{ minHeight: minHeightStyle }}
     >
-      <StellarWalletProvider network={stellarNetwork} externalKit={externalWalletKit}>
+      <StellarWalletProvider externalKit={externalWalletKit}>
         <VenalabsStellarSDKProvider
           apiKey={apiKey}
           getAccessToken={getAccessToken}
